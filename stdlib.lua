@@ -18,13 +18,15 @@ dofile = notImplemented
 
 error = __js [[ 
 function(val){
-    throw new Error(val);
+    if (typeof(val) =='string')
+        throw new Error(val);
+    throw val;
 }
 ]];
 
 getmetatable = __js [[ 
 function(val){
-    return [val && val.metatable];
+    return val && val.metatable;
 }
 ]]
 
@@ -38,9 +40,9 @@ function ipairs(t)
 end
 
 loadString = __js [[
-    function(str, env){
-        return [l.__loadString(str, env)];
-    }
+function(str, env){
+    return l.__loadString(str, env);
+}
 ]]
 
 function load(ld,source,mod,env)
@@ -59,16 +61,16 @@ next = notImplemented
 pairs = notImplemented
 
 pcall = __js[[
-    function (f){
-        var args = Array.prototype.slice.call(arguments, 1);
-        try{
-            var ret = f.apply(null, args);
-            ret.unshift(true);
-            return ret;
-        } catch(e){
-            return [false, e];
-        }
+l._f(function (f){
+    var args = Array.prototype.slice.call(arguments, 1);
+    try{
+        var ret = l.__call(f, args);
+        ret.unshift(true);
+        return ret;
+    } catch(e){
+        return [false, e];
     }
+})
 ]]
 
 function print(...)
@@ -81,49 +83,49 @@ function print(...)
 end
 
 rawequal = __js[[
-    function (a, b){
-        return [a === b];
-    }
+function (a, b){
+    return a === b;
+}
 ]]
 
 rawget = __js[[
-    function (t, k){
-        var tp = l.__type(t);
-        if (tp != 'table') {
-            throw Error("rawget called with type " + tp);
-        }
-        return [t.get(k)];
+function (t, k){
+    var tp = l.__type(t);
+    if (tp != 'table') {
+        throw Error("rawget called with type " + tp);
     }
+    return t.get(k);
+}
 ]]
 
 rawlen = __js[[
-    function (t){
-        var tp = l.__type(t);
-        if (tp != 'table') {
-            throw Error("rawlen called with type " + tp);
-        }
-        return [t.length()];
+function (t){
+    var tp = l.__type(t);
+    if (tp != 'table') {
+        throw Error("rawlen called with type " + tp);
     }
+    return t.length();
+}
 ]]
 
 rawset = __js[[
-    function (t, k, v){
-        var tp = l.__type(t);
-        if (tp != 'table') {
-            throw Error("rawget called with type " + tp);
-        }
-        t.set(k, v);
-        return [t];
+function (t, k, v){
+    var tp = l.__type(t);
+    if (tp != 'table') {
+        throw Error("rawget called with type " + tp);
     }
+    t.set(k, v);
+    return t;
+}
 ]]
 
 select = __js[[
-    function (index){
-        if (index == '#') {
-            return arguments.length
-        }
-        return arguments[index];
+function (index){
+    if (index == '#') {
+        return arguments.length;
     }
+    return arguments[index];
+}
 ]]
 
 setmetatable = __js [[ 
@@ -132,37 +134,22 @@ function(val, mt){
         throw new Error("Cannot set metatable to non-object values.");
     }
     val.metatable = mt;
-    return []
 }
 ]]
 
-tonumber = __js[[
-    function (v){
-        return [l.__tonumber(v)];
-    }
-]]
-
-tostring = __js[[
-    function (v){
-        return [l.__tostring(v)];
-    }
-]]
-
-type = __js[[
-    function (val){
-        return [l.__type(val)];
-    }
-]]
+tonumber = __js "l.__tonumber"
+tostring = __js "l.__tostring"
+type = __js "l.__type"
 
 xpcall = __js[[
-    function (f, msgh){
-        var args = Array.prototype.slice.call(arguments, 2);
-        try{
-            return f.apply(null, args);
-        } catch(e){
-            return msgh(e);
-        }
+function (f, msgh){
+    var args = Array.prototype.slice.call(arguments, 2);
+    try{
+        return l.__call(f, args);
+    } catch(e){
+        return l.__call(msgh, [e]);
     }
+}
 ]]
 
 package = {}
@@ -188,9 +175,10 @@ function require(modname)
     return package.loaded[modname]
 end
 
---string = {}
+string = {}
+__js "l.stringMT" = string
 string.byte = __js [[
-function (s, i, j){
+l._f(function (s, i, j){
     if (typeof(s) != 'string'){
         s = l.__tostring(s);
         if (s == l.ds){
@@ -215,85 +203,82 @@ function (s, i, j){
             ret.push(c);
         }
     }
-}
+    return ret;
+})
 ]]
 
-string.dump = __js [[
-    function (f){
-        return [l.__dump(f)];
-    }
-]]
+string.dump = __js "l.__dump"
 
 
 string.find = __js[[
-    function (s, pattern, init, plain){
-        if (plain){
-            return [s.indexOf(pattern, init && (init-1))+1]
-        }
-        throw new Error("Not implemented.")
+function (s, pattern, init, plain){
+    if (plain){
+        return s.indexOf(pattern, init && (init-1))+1
     }
+    throw new Error("Not implemented.")
+}
 ]]
 
 string.len = __js[[
-    function (s){
-        if (typeof(s) != 'string' && s != l.ds){
-            s = l.__tostring(s);
-        }
-        if (s == l.ds){
-            // Empty string.
-            return [0];
-        }
-        return [s.length];
+function (s){
+    if (typeof(s) != 'string' && s != l.ds){
+        s = l.__tostring(s);
     }
+    if (s == l.ds){
+        // Empty string.
+        return 0;
+    }
+    return s.length;
+}
 ]]
 
 string.lower = __js[[
-    function (s){
-        if (typeof(s) != 'string' && s != l.ds){
-            s = l.__tostring(s);
-        }
-        if (s == l.ds){
-            // Empty string.
-            return [s];
-        }
-        return [s.toLowerCase()];
+function (s){
+    if (typeof(s) != 'string' && s != l.ds){
+        s = l.__tostring(s);
     }
+    if (s == l.ds){
+        // Empty string.
+        return s;
+    }
+    return s.toLowerCase();
+}
 ]]
 
 string.upper = __js[[
-    function (s){
-        if (typeof(s) != 'string' && s != l.ds){
-            s = l.__tostring(s);
-        }
-        if (s == l.ds){
-            // Empty string.
-            return [s];
-        }
-        return [s.toUpperCase()];
+function (s){
+    if (typeof(s) != 'string' && s != l.ds){
+        s = l.__tostring(s);
     }
+    if (s == l.ds){
+        // Empty string.
+        return s;
+    }
+    return s.toUpperCase();
+}
 ]]
 
 string.rep = __js[[
-    function (s, n, sep){
-        if (sep){
-            return new Array(n).join(s+sep) + s;
-        } else {
-            return new Array(n+1).join(s);
-        }
+function (s, n, sep){
+    if (sep){
+        return new Array(n).join(s+sep) + s;
+    } else {
+        return new Array(n+1).join(s);
     }
+}
 ]]
 
 string.reverse = __js[[
-    function (s){
-        if (typeof(s) != 'string' && s != l.ds){
-            s = l.__tostring(s);
-        }
-        if (s == l.ds){
-            // Empty string.
-            return [s];
-        }        
-        return [s.split("").reverse().join("")]
+function (s){
+    if (typeof(s) != 'string' && s != l.ds){
+        s = l.__tostring(s);
     }
+    if (s == l.ds){
+        // Empty string.
+        return s;
+    }        
+    return s.split("").reverse().join("")
+}
 ]]
 
 string.sub = __js[[
@@ -330,7 +315,7 @@ function (list, sep, i, j){
             list = list.slice(i-1);
         }
     }
-    return [list.join(sep || "")]
+    return list.join(sep || "")
 }
 ]]
 
@@ -341,25 +326,22 @@ function (t, pos, value){
     } else {
         t.array.push(value);
     }
-    return [];
 }
 ]]
 
-table.pack = __js [[
-    function (){
-        return [Array.prototype.slice.call(arguments, 0)];
-    }
-]]
+table.pack = function(...)
+    return {...}
+end
 pack = table.pack
 
 table.remove = __js[[
-function (t, pos){
+l._f(function (t, pos){
     if (pos){
         return t.array.splice(pos-1, 1);
     } else {
         return [t.array.pop()];
     }
-}
+})
 ]]
 
 table.sort = __js[[
@@ -387,105 +369,49 @@ function (t, comp){
 ]]
 
 table.unpack = __js[[
-    function (t){
-        return t.array;
-    }
+l._f(function (t){
+    return t.array;
+})
 ]]
 
 math = {}
 
-math.abs = __js [[
-    function (v){
-        return [Math.abs(v)];
-    }
-]]
+math.abs = __js "Math.abs"
+math.acos = __js "Math.acos"
+math.asin = __js "Math.asin"
+math.atan = __js "Math.atan"
+math.atan2 = __js "Math.atan2"
+math.ceil = __js "Math.ceil"
+math.cos = __js "Math.cos"
+math.cosh = __js "Math.cosh"
+math.deg = __js "Math.deg"
+math.exp = __js "Math.exp"
+math.floor = __js "Math.floor"
+math.pow = __js "Math.pow"
+math.sin = __js "Math.sin"
+math.sinh = __js "Math.sinh"
+math.sqrt = __js "Math.sqrt"
+math.tan = __js "Math.tan"
+math.tanh = __js "Math.tanh"
+math.pi = __js [[Math.PI]]
 
-
-math.acos = __js [[
-    function (v){
-        return [Math.acos(v)];
-    }
-]]
-
-
-math.asin = __js [[
-    function (v){
-        return [Math.asin(v)];
-    }
-]]
-
-math.atan = __js [[
-    function (v){
-        return [Math.atan(v)];
-    }
-]]
-
-math.atan2 = __js [[
-    function (y, x){
-        return [Math.atan2(y, x)];
-    }
-]]
-
-math.ceil = __js [[
-    function (v){
-        return [Math.ceil(v)];
-    }
-]]
-
-math.cos = __js [[
-    function (v){
-        return [Math.cos(v)];
-    }
-]]
-
-math.cosh = __js [[
-    function (v){
-        return [Math.cosh(v)];
-    }
-]]
-
-math.deg = __js [[
-    function (v){
-        return [v*180/Math.PI];
-    }
-]]
-
-math.exp = __js [[
-    function (v){
-        return [Math.exp(v)];
-    }
-]]
-
-math.floor = __js [[
-    function (v){
-        return [Math.floor(v)];
-    }
-]]
 
 math.log = __js [[
-    function (v, base){
-        return [base ? Math.log(v)/Math.log(base) : Math.log(v)];
-    }
+function (v, base){
+    return base ? Math.log(v)/Math.log(base) : Math.log(v);
+}
 ]]
 
 math.max = __js [[
-    function (){
-        return [Math.max.apply(null, arguments)];
-    }
+function (){
+    return Math.max.apply(null, arguments);
+}
 ]]
 
 math.min = __js [[
-    function (v){
-        return [Math.min.apply(null, arguments)];
-    }
-]]
-
-math.pi = __js [[Math.PI]]
-
-math.pow = __js [[
-    function (x, y){
-        return [Math.pow(x, y)];
-    }
+function (v){
+    return Math.min.apply(null, arguments);
+}
 ]]
 
 math.rad = __js [[
@@ -506,41 +432,11 @@ math.random = __js[[
     }
 ]]
 
-math.sin = __js [[
-    function (v){
-        return [Math.sin(v)];
-    }
-]]
-
-math.sinh = __js [[
-    function (v){
-        return [Math.sinh(v)];
-    }
-]]
-
-math.sqrt = __js [[
-    function (v){
-        return [Math.sqrt(v)];
-    }
-]]
-
-math.tan = __js [[
-    function (v){
-        return [Math.tan(v)];
-    }
-]]
-
-math.tanh = __js [[
-    function (v){
-        return [Math.tanh(v)];
-    }
-]]
-
 bit32 = {}
 
 bit32.arshift = __js[[
     function (x, disp){
-        return [x<<disp];
+        return x<<disp;
     }
 ]]
 
@@ -549,13 +445,13 @@ bit32.band = __js[[
         for (var i= 1; i < arguments.length; i++){
             x &= arguments[i];
         }
-        return [x];
+        return x;
     }
 ]]
 
 bit32.bnot = __js[[
     function (x){
-        return [~x];
+        return ~x;
     }
 ]]
 
@@ -564,7 +460,7 @@ bit32.bor = __js[[
         for (var i= 1; i < arguments.length; i++){
             x |= arguments[i];
         }
-        return [x];
+        return x;
     }
 ]]
 
@@ -573,7 +469,7 @@ bit32.btest = __js[[
         for (var i= 1; i < arguments.length; i++){
             x &= arguments[i];
         }
-        return [x != 0];
+        return x != 0;
     }
 ]]
 
@@ -582,7 +478,7 @@ bit32.bxor = __js[[
         for (var i= 1; i < arguments.length; i++){
             x ^= arguments[i];
         }
-        return [x != 0];
+        return x != 0;
     }
 ]]
 
@@ -591,7 +487,9 @@ io = {}
 
 io.write = __js[[
 function (v){
-    console.log(v)
+    if (v != "\n"){
+        console.log(v)
+    }
 }
 ]]
 
@@ -604,7 +502,7 @@ os.clock = __js[[
     (function(){
         var start = Date.now();
         return function(){
-            return [(Date.now() - start)/1000];
+            return (Date.now() - start)/1000;
         }
     })()
 ]]
@@ -614,7 +512,7 @@ function os.difftime(t2, t1)
 end
 
 os.time = __js [[
-    function(){
-        return [Date.now()/1000];
-    }
+function(){
+    return Date.now()/1000;
+}
 ]]
