@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Lua.js live demo</title>
+</head>
+<body>
+    <div>
+        <p>This is a live demo for lua.js.</p>
+        <p>lua.js is a great project that can convert lua code to javascript. lua.js is fully written by javascript, so both lua.js self and all generated code can be run on web.</p>
+        <p>Contact me with:</p>
+        <p>QQ: 402740419</p>
+        <p>E-mail: tdzl2003@gmail.com</p>
+    </div>
+    <div><textarea id="code" cols="100" rows="12"></textarea></div>
+    <div><button id="run">Run</button><button id="clean">Clean</button></div>
+    <div><textarea id="result" cols="100" rows="10" disabled></textarea></div>
+    <div>Passed Tests:</div>
+    <div>
+        <p>
+            Basic.
+            <button class="test" test="0">Hello, Lua.js</button>
+            <button class="test" test="1">Variable Scope</button>
+        </p>
+        <p>
+            Table
+        </p>
+        <p>
+            Function
+            <button class="test" test="2">A+B</button>
+            <button class="test" test="3">Indexed function</button>
+            <button class="test" test="4">Call with return values</button>
+            <button class="test" test="5">Variable arguments</button>
+        </p>
+        <p>
+            Statements
+            <button class="test" test="6">If statement</button>
+            <button class="test" test="8">For statement</button>
+            <button class="test" test="9">For-in statement</button>
+            <button class="test" test="10">While & Repeat</button>
+        </p>
+        <p>
+            Expression
+        </p>
+        <p>
+            Metatable
+        </p>
+        <p>
+            String
+        </p>
+        <p>
+            Others
+            <button class="test" test="7">Y Combinator</button>
+            <button class="test" test="11">Singleton</button>
+        </p>
+    </div>
+    <div>
+        <p>Done features:</p>
+        <ul>
+            <li>Basic language parser&codegen.</li>
+            <li>Variable scope</li>
+            <li>Function&Function call</li>
+            <li>Index, Method call</li>
+            <li>Multi return</li>
+            <li>Call with multi-ret function</li>
+            <li>Multi assignment</li>
+            <li>Variable arguments</li>
+            <li>If statement</li>
+            <li>For statement</li>
+            <li>For-in statement</li>
+            <li>While statement</li>
+            <li>Repeat-until statement</li>
+        </ul>
+    </div>
+    <div>
+        <p>Currently working on</p>
+        <ul>
+            <li>Table constructor (with values.)</li>
+            <li>Break statement</li>
+            <li>Operators</li>
+            <li>Table for different key type.</li>
+        </ul>
+    </div>
+    <div>
+        <p>Other TODOs:</p>
+        <ul>
+            <li>Metatable</li>
+            <li>Standard libs.</li>
+        </ul>
+    </div>
+    <script type="application/javascript" src="web.js"></script>
+    <script type="application/javascript" src="tests.js"></script>
+    <script>
+
+        var taCode = document.getElementById("code");
+        var taResult = document.getElementById("result");
+
+        luajs._G.set("print", function(){
+            var val = Array.prototype.join.call(arguments, '  ');
+            taResult.value += val+"\n";
+            return [];
+        })
+
+        document.getElementById("run").onclick = function(){
+            if (FlurryAgent){
+                FlurryAgent.logEvent("run");
+            }
+            var code = taCode.value;
+            try{
+                console.log(luajs.compile(code));
+                luajs.loadString(code)();
+            } catch(e){
+                taResult.value += e + "\n";
+                throw (e);
+            }
+        }
+        document.getElementById("clean").onclick = function(){
+            taResult.value = "";
+        }
+        var tests = document.getElementsByClassName("test");
+        for (var i = 0 ;i < tests.length; i++){
+            tests[i].onclick = (function(ele){
+                var id = parseInt(ele.getAttribute("test"));
+                return function(){
+                    taCode.value = testcodes[id];
+                }
+            })(tests[i]);
+        }
+    </script>
+
+    <script type="application/javascript" src="https://cdn.flurry.com/js/flurry.js"></script>
+    <script type="application/javascript">FlurryAgent.startSession("DBY2776YDRZ3SQS5GZNR");</script>
+</body>
+</html>

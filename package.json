@@ -1,0 +1,23 @@
+{
+    "name": "lua.js",
+    "version": "0.0.1",
+    "description": "Full lua support for js. JS implemented lua2js.",
+    "main": "lib/index.js",
+    "bin":{
+        "luajs": "bin/lua.js",
+        "luacjs": "bion/luac.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:tdzl2003/lua.js.git"
+    },
+    "dependencies": {
+    },
+    "keywords": [
+        "lua"
+    ],
+    "author": {
+        "name": "DengYun"
+    },
+    "readme": "ERROR: No README data found!"
+}
