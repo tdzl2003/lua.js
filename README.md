@@ -4,6 +4,8 @@ Lua.js is a great project that can convert lua code to javascript.
 
 lua.js is fully written by javascript, so both lua.js self and all generated code can be run on web.
 
+Try it on: [Live Demo](http://luajs.org)
+
 Contact me with:
 
 QQ: 402740419
