@@ -46,6 +46,14 @@ local f = L.loadString(js);
 f();
 ```
 
+# Limitation #
+
+Coroutine will never be supported by lua.js
+
+__mode and __gc in metatable was not supported by lua.js.
+
+String pattern support is still on working.
+
 # Support #
 
 Thanks for support me by: 
