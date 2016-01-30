@@ -134,6 +134,7 @@ function(val, mt){
         throw new Error("Cannot set metatable to non-object values.");
     }
     val.metatable = mt;
+    return val;
 }
 ]]
 
