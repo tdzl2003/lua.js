@@ -1,23 +1,37 @@
 {
-    "name": "lua.js",
-    "version": "0.0.1",
-    "description": "Full lua support for js. JS implemented lua2js.",
-    "main": "lib/index.js",
-    "bin":{
-        "luajs": "bin/lua.js",
-        "luacjs": "bion/luac.js"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git@github.com:tdzl2003/lua.js.git"
-    },
-    "dependencies": {
-    },
-    "keywords": [
-        "lua"
-    ],
-    "author": {
-        "name": "DengYun"
-    },
-    "readme": "ERROR: No README data found!"
+  "name": "lua.js",
+  "version": "0.0.1",
+  "description": "Full lua support for js. JS implemented lua2js.",
+  "main": "lib/index.js",
+  "bin": {
+    "luajs": "bin/lua.js",
+    "luacjs": "bion/luac.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/tdzl2003/lua.js.git"
+  },
+  "dependencies": {
+    "browserify": "^13.0.0",
+    "mocha": "^2.4.5"
+  },
+  "keywords": [
+    "lua"
+  ],
+  "author": "DengYun",
+  "bugs": {
+    "url": "https://github.com/tdzl2003/lua.js/issues"
+  },
+  "homepage": "https://github.com/tdzl2003/lua.js#readme",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "node ./node_modules/mocha/bin/mocha test/test-cases.spec.js",
+    "build": "node bin/buildweb.js"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "mocha": "^2.4.5"
+  }
 }
