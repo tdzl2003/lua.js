@@ -3,7 +3,7 @@ for i = 1, 10 do
     local j = 0
     t[i] = function()
        j = j + 1
-       print(j)
+       assert(j == 1)
     end
 end
 
