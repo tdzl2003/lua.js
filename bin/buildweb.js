@@ -4,7 +4,7 @@
 
 var fs= require("fs");
 
-var template = fs.readFileSync("web.js.template", {encoding:'utf8'});
+var template = fs.readFileSync("lua.js.template", {encoding:'utf8'});
 
 var reg = /\/\*\@include ([a-z\.\/]*)\*\//g;
 
