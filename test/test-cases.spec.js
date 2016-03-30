@@ -11,12 +11,9 @@ var fssearcher = function(name) {
     // Check for the file in TEST_CASE_DIR
     if (fs.existsSync(path.join(TEST_CASE_DIR, name))) {
         var txt = fs.readFileSync(path.join(TEST_CASE_DIR, name), 'utf8'),
-            cxt = luajs.newContext(),
             fn;
 
-        // Create a new context, run the code and return the result
-        cxt.loadStdLib();
-        fn = cxt.loadString(txt);
+        fn = this.loadString(txt);
         return fn;
     }
 };
@@ -29,7 +26,7 @@ describe('test cases', function() {
         cxt.loadStdLib();
 
         // Add fs searcher
-        cxt._G.get('package').set('searchers', [fssearcher]);
+        cxt._G.get('package').set('searchers', [fssearcher.bind(cxt)]);
         bin = cxt.loadString(pair[1]);
 
         bin();
