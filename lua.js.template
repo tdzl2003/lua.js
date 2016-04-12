@@ -54,6 +54,7 @@
 
     if (typeof window !== 'undefined') {
         (function(){
+            var luajs = modules.index;
             /*@include ./lib/browser.js*/
         })();
     }
