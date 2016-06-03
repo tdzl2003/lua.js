@@ -4,21 +4,10 @@
 var intercept = require('intercept-stdout');
 var assert = require('chai').assert;
 
-beforeEach(function() {
-  this.capturedText = "";
-  this.unhookIntercept = intercept((function (txt) {
-    this.capturedText += txt;
-  }).bind(this));
-});
-
-afterEach(function(){
-  this.unhookIntercept();
-  this.unhookIntercept = null;
-  this.capturedText = null;
-});
-
 var fs = require('fs');
 var path = require('path');
+
+var luajs = require('../lib');
 
 function enumDir(dir){
   var paths = fs.readdirSync(dir);
@@ -27,19 +16,25 @@ function enumDir(dir){
     var fn = path.join(dir, n);
     var st = fs.statSync(fn);
     if (st.isDirectory()){
-      return enumDir(fn);
+      enumDir(fn);
     } else if (/\.lua$/.test(n)) {
       (function(fn) {
         var outfn = fn.replace(/\.lua$/, '.out');
-        it(fn, function () {
+        it(path.relative(__dirname, fn), function () {
           var scriptContent = fs.readFileSync(fn, 'utf-8');
           var outputContent = fs.readFileSync(outfn, 'utf-8');
 
-          var luajs = require('../lib');
+          var captured = "";
+          var unhook = intercept(function (txt) {
+            captured += txt;
+            return '';
+          });
+
           var L = luajs.newContext();
           L.loadStdLib();
           L.loadString(scriptContent)();
-          assert.equal(this.capturedText, outputContent);
+          unhook();
+          assert.equal(captured, outputContent);
         });
       })(fn);
     }
