@@ -29,8 +29,8 @@ function enumDir(dir){
     if (st.isDirectory()){
       return enumDir(fn);
     } else if (/\.lua$/.test(n)) {
-      var outfn = fn.replace(/\.lua$/, '.out');
       (function(fn) {
+        var outfn = fn.replace(/\.lua$/, '.out');
         it(fn, function () {
           var scriptContent = fs.readFileSync(fn, 'utf-8');
           var outputContent = fs.readFileSync(outfn, 'utf-8');
