@@ -30,10 +30,13 @@ function enumDir(dir){
             return '';
           });
 
-          var L = luajs.newContext();
-          L.loadStdLib();
-          L.loadString(scriptContent)();
-          unhook();
+          try {
+            var L = luajs.newContext();
+            L.loadStdLib();
+            L.loadString(scriptContent)();
+          } finally{
+            unhook();
+          }
           if (captured !== outputContent){
             expect(captured).to.equal(outputContent);
           }
