@@ -2,7 +2,7 @@
  * Created by tdzl2003 on 6/3/16.
  */
 var intercept = require('intercept-stdout');
-var assert = require('chai').assert;
+var expect = require('chai').expect;
 
 var fs = require('fs');
 var path = require('path');
@@ -34,7 +34,9 @@ function enumDir(dir){
           L.loadStdLib();
           L.loadString(scriptContent)();
           unhook();
-          assert.equal(captured, outputContent);
+          if (captured !== outputContent){
+            expect(captured).to.equal(outputContent);
+          }
         });
       })(fn);
     }
