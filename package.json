@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "bin": {
     "luajs": "bin/lua.js",
-    "luacjs": "bion/luac.js"
+    "luacjs": "bin/luac.js"
   },
   "repository": {
     "type": "git",
