@@ -37,9 +37,7 @@ function enumDir(dir){
           } finally{
             unhook();
           }
-          if (captured !== outputContent){
-            expect(captured).to.equal(outputContent);
-          }
+          expect(captured).to.equal(outputContent);
         });
       })(fn);
     }
