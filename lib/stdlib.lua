@@ -57,8 +57,23 @@ function load(ld,source,mod,env)
 end
 
 loadfile = notImplemented
-next = notImplemented
-pairs = notImplemented
+
+next = __js[[
+l._f(function(t, k){
+    if (! (t instanceof l.LuaTable)) {
+        return [];
+    }
+    k = t.nextKey(k);
+    if (k === null){
+        return [];
+    }
+    return [k, t.get(k)];
+})
+]]
+
+pairs = function (t)
+    return next, t, nil
+end
 
 pcall = __js[[
 l._f(function (f){
