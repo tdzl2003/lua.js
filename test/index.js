@@ -22,7 +22,7 @@ function enumDir(dir){
         var outfn = fn.replace(/\.lua$/, '.out');
         it(path.relative(__dirname, fn), function () {
           var scriptContent = fs.readFileSync(fn, 'utf-8');
-          var outputContent = fs.readFileSync(outfn, 'utf-8');
+          var outputContent = fs.readFileSync(outfn, 'utf-8').replace(/\r/g, '');
 
           var captured = "";
           var unhook = intercept(function (txt) {
