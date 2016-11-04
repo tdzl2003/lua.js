@@ -363,7 +363,7 @@ l._f(function (t, pos){
 table.sort = __js[[
 function (t, comp){
     if (comp){
-        t.array.sort(function(){
+        t.array.sort(function(a, b){
             if (comp(a, b)[0]){
                 return -1;
             } else if (comp(b, a)[0]){
