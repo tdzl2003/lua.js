@@ -337,10 +337,10 @@ function (list, sep, i, j){
 
 table.insert = __js [[
 function (t, pos, value){
-    if (pos){
+    if (value){
         t.array.splice(pos-1, 0, value);
     } else {
-        t.array.push(value);
+        t.array.push(pos);
     }
 }
 ]]
